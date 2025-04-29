@@ -1,12 +1,9 @@
 class Subject:
 
-    def __init__(self, name, credits, grade, result):
+    def __init__(self, name, credits, grade):
         self.name = name
         self.credits = credits
         self.grade = grade
-        self.result = result
-    
-    def SubjectResult(self):
         if self.grade >= 7:
             self.result = "OK"
         else:
@@ -18,25 +15,28 @@ class Period:
         self.name = name
         self.subjects = []
 
-    def InsertSubject(self, subject):
+    def insert_subject(self, subject):
         self.subjects.append(subject)
     
-    def CalculateSubjectAverage(self):
+    def calculate_subject_average(self):
+        periodPonderateSum = 0
+        periodCreditsSum = 0
         for d in self.subjects:
             periodPonderateSum += (d.grade * d.credits)
             periodCreditsSum += d.credits
         return periodPonderateSum / periodCreditsSum
     
-    def PeriodTotalCredits(self):
+    def period_total_credits(self):
+        periodTotalCredits = 0
         for d in self.subjects:
             periodTotalCredits += d.credits
         return periodTotalCredits
     
-    def EarnedCredits(self):
+    def earned_credits(self):
+        periodEarnedCredits = 0
         for d in self.subjects:
             if d.result == "OK":
                 periodEarnedCredits += d.credits
-            pass
         return periodEarnedCredits
     
 class ReportCard:
@@ -45,10 +45,19 @@ class ReportCard:
         self.name = name
         self.periods = []
 
-    def InsertPeriods(self, period):
+    def insert_periods(self, period):
         self.periods.append(period)
 
-    def CalculateTotalAverage(self):
+    def calculate_total_average(self):
+        totalPonderateSum = 0
+        totalCredits = 0
+
         for p in self.periods:
-            totalGradesSum += p.calculate
-            totalCreditsSum += p.PeriodTotalCredits()
+            periodAverage = p.calculate_subject_average()
+            periodCredits = p.period_total_credits()
+            totalPonderateSum += (periodAverage * periodCredits)
+            totalCredits += periodCredits
+        if totalCredits > 0:
+            return totalPonderateSum / totalCredits
+        else:
+            return 0
