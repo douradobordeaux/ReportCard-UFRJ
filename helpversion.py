@@ -88,13 +88,15 @@ class ReportCard:
     
     def print_report_card(self):
         for p in self.periods:
+            print("\n")
+            print("====================")
             print(f"Period: {p.name}\n")
             for d in p.subjects:
                 print(f"Subject: {d.name} / Grade: {d.grade} / Credits: {d.credits} / Result: {d.result} ")
             print("\n")
             print(f"Period Average: {p.calculate_period_average():.2f} / Period Earned Credits: {p.calculate_period_earned_credits()} / Period Credits: {p.calculate_period_total_credits()} / Period Fails: {p.calculate_period_subjects_failed()} ",)
             print(f"Total Average: {self.calculate_total_average():.2f} / Total Earned Credits: {self.calculate_total_credits_earned()} / Total Credits: {self.calculate_total_credits()} / Total Fails: {self.calculate_total_fails()} ")
-            print("\n")
+            print("====================")
         return
 
 
