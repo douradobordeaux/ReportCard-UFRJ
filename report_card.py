@@ -38,7 +38,7 @@ class ReportCard:
 
     def calculate_current_total_average(self, period):
         period_grades_weighted_sum = sum(p.calculate_period_average() * p.calculate_period_credits() for p in self.periods[:period])
-        period_credits_sum = sum(p.calculate_period_credits() for p in self.periods)
+        period_credits_sum = sum(p.calculate_period_credits() for p in self.periods[:period])
         return period_grades_weighted_sum / period_credits_sum if period_credits_sum > 0 else 0
     
     def calculate_current_total_credits(self, period):
@@ -71,9 +71,9 @@ class ReportCard:
             print("====================")
             print(f"Period: {p.name}\n")
             for d in p.subjects:
-                print(f"Subject: {d.name} / Grade: {d.grade} / Credits: {d.credits} / Result: {d.result} ")
+                print(f"Subject: {d.name} / Grade: {d.grade} / Credits: {d.credits} / Result: {"Passed" if (d.result) == True else "Failed"}")
             print("\n")
-            print(f"Period Average: {p.calculate_period_average():.2f} / Period Earned Credits: {p.calculate_period_earned_credits()} / Period Credits: {p.calculate_period_credits()} / Period Fails: {p.calculate_period_fails()} ",)
+            print(f"Period Average: {p.calculate_period_average():.2f} / Period Earned Credits: {p.calculate_period_earned_credits()} / Period Credits: {p.calculate_period_credits()} / Period Fails: {p.calculate_period_fails()}")
             print(f"Total Average: {self.calculate_current_total_average(i+1):.2f} / Total Earned Credits: {self.calculate_current_total_earned_credits(i+1)} / Total Credits: {self.calculate_current_total_credits(i+1)} / Total Fails: {self.calculate_current_total_fails(i+1)} ")
             print("====================")
         return
