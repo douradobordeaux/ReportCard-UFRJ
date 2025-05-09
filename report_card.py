@@ -3,7 +3,8 @@ class Subject:
         self.name = name
         self.grade = grade
         self.credits = credits
-        self.result = True if grade >= 5 else False
+        self.result = grade >= 5
+
 
 class Period:
     def __init__(self, name):
@@ -22,10 +23,10 @@ class Period:
         return sum(s.credits for s in self.subjects)
 
     def calculate_period_earned_credits(self):
-        return sum(s.credits for s in self.subjects if s.result == True)
+        return sum(s.credits for s in self.subjects if s.result)
 
     def calculate_period_fails(self):
-        return sum(1 for s in self.subjects if s.result == False)
+        return sum(1 for s in self.subjects if not s.result)
     
 
 class ReportCard:
@@ -67,15 +68,21 @@ class ReportCard:
     def print_report_card(self):
         print("\n\n")
         for i, p in enumerate(self.periods):
-            print("\n")
-            print("====================")
+            print("\n====================")
             print(f"Period: {p.name}\n")
             for d in p.subjects:
-                print(f"Subject: {d.name} / Grade: {d.grade} / Credits: {d.credits} / Result: {"Passed" if (d.result) == True else "Failed"}")
-            print("\n")
-            print(f"Period Average: {p.calculate_period_average():.2f} / Period Earned Credits: {p.calculate_period_earned_credits()} / Period Credits: {p.calculate_period_credits()} / Period Fails: {p.calculate_period_fails()}")
-            print(f"Total Average: {self.calculate_current_total_average(i+1):.2f} / Total Earned Credits: {self.calculate_current_total_earned_credits(i+1)} / Total Credits: {self.calculate_current_total_credits(i+1)} / Total Fails: {self.calculate_current_total_fails(i+1)} ")
-            print("====================")
+                print(f"Subject: {d.name} / Grade: {d.grade} / Credits: {d.credits} / Result: {'Passed' if d.result else 'Failed'} \n")
+            period_average = p.calculate_period_average()
+            period_earned_credits = p.calculate_period_earned_credits()
+            period_credits = p.calculate_period_credits()
+            period_fails = p.calculate_period_fails()
+            total_average = self.calculate_current_total_average(i + 1)
+            total_earned_credits = self.calculate_current_total_earned_credits(i + 1)
+            total_credits = self.calculate_current_total_credits(i + 1)
+            total_fails = self.calculate_current_total_fails(i + 1)
+            print(f"Period Average: {period_average:.2f} / Period Earned Credits: {period_earned_credits} / Period Credits: {period_credits} / Period Fails: {period_fails}")
+            print(f"Total Average: {total_average:.2f} / Total Earned Credits: {total_earned_credits} / Total Credits: {total_credits} / Total Fails: {total_fails}")
+            print("\n====================")
         return
 
 report_card = ReportCard()
