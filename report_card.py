@@ -1,9 +1,22 @@
+import json
 class Subject:
     def __init__(self, name, grade, credits):
         self.name = name
         self.grade = grade
         self.credits = credits
         self.result = grade >= 5
+
+    def subject_to_dictionary(self):
+        return {
+            "name": self.name,
+            "grade": self.grade,
+            "credits": self.credits,
+            "result": self.result
+        }
+    
+    def subject_from_dictionary(data):
+        subject = Subject(data["name"], data["grade"], data["credits"])
+        return subject
 
 
 class Period:
@@ -28,6 +41,16 @@ class Period:
     def calculate_period_fails(self):
         return sum(1 for s in self.subjects if not s.result)
     
+    def period_to_dictionary(self):
+        return {
+            "name": self.name,
+            "subjects": [s.subject_to_dictionary() for s in self.subjects]
+        }
+    
+    def period_from_dictionary(data):
+        period = Period(data["name"])
+        period.subjects = [Subject.subject_from_dictionary(s) for s in data["subjects"]]
+        return period
 
 class ReportCard:
 
@@ -83,7 +106,6 @@ class ReportCard:
             print(f"Period Average: {period_average:.2f} / Period Earned Credits: {period_earned_credits} / Period Credits: {period_credits} / Period Fails: {period_fails}")
             print(f"Total Average: {total_average:.2f} / Total Earned Credits: {total_earned_credits} / Total Credits: {total_credits} / Total Fails: {total_fails}")
             print("\n====================")
-        return
 
 report_card = ReportCard()
 report_card.register_report_card()
