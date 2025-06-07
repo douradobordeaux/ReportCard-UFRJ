@@ -1,0 +1,34 @@
+{
+  "periods": [
+    {
+      "name": "23.1",
+      "subjects": [
+        {
+          "name": "Calculo 1",
+          "grade": 4.2,
+          "credits": 6
+        },
+        {
+          "name": "Alg Lin 1",
+          "grade": 3.8,
+          "credits": 4
+        }
+      ]
+    },
+    {
+      "name": "23.2",
+      "subjects": [
+        {
+          "name": "Calculo 1",
+          "grade": 6.4,
+          "credits": 6
+        },
+        {
+          "name": "Fisica 1",
+          "grade": 3.2,
+          "credits": 4
+        }
+      ]
+    }
+  ]
+}

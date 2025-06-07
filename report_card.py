@@ -1,5 +1,4 @@
 import json
-from report_card_save import data
 class Subject:
     def __init__(self, name, grade, credits):
         self.name = name
@@ -10,6 +9,7 @@ class Subject:
     def subject_to_dictionary(self):
         return {"name": self.name, "grade": self.grade, "credits": self.credits, "result": self.result}
     
+    @staticmethod
     def subject_from_dictionary(data):
         subject = Subject(data["name"], data["grade"], data["credits"])
         return subject
@@ -40,6 +40,7 @@ class Period:
     def period_to_dictionary(self):
         return {"name": self.name, "subjects": [s.subject_to_dictionary() for s in self.subjects]}
     
+    @staticmethod
     def period_from_dictionary(data):
         period = Period(data["name"])
         period.subjects = [Subject.subject_from_dictionary(s) for s in data["subjects"]]
@@ -70,23 +71,28 @@ class ReportCard:
     def report_card_to_dictionary(self):
         return {"periods": [p.period_to_dictionary() for p in self.periods]}
     
-    def read_report_card_save(self, data):
+    def read_report_from_dictionary(self, data):
         self.periods = [Period.period_from_dictionary(p) for p in data["periods"]]
+
+    def report_card_to_json(self):
+        return json.dumps({"periods": [p.period_to_dictionary() for p in self.periods]}, indent=4)
     
-    # def register_report_card(self):
-    #     periods_amount = int(input("Type how many periods you want to register: "))
-    #     for p in range (periods_amount):
-    #         period_name = input("Type the name of the period you want to register: ")
-    #         period = Period(period_name)
-    #         subjects_amount = int(input("Type how many subjects you want to register: "))
-    #         for s in range (subjects_amount):
-    #             subject_name = input("Type the name of the subject you want to register: ")
-    #             subject_grade = float(input("Type the grade of the subject you want to register: "))
-    #             subject_credits = int(input("Type the credits of the subject you want to register: "))
-    #             subject = Subject(subject_name, subject_grade, subject_credits)
-    #             period.insert_subject(subject)
-    #         self.insert_period(period)
-        
+    def report_card_from_json(self, json_string):
+        data = json.loads(json_string)
+        self.periods = [Period.period_from_dictionary(p) for p in data["periods"]]
+
+    def save_to_file_json(self, filename):
+        with open(filename, "w") as f:
+            f.write(self.report_card_to_json())
+
+    def load_from_file_json(self, filename):
+        try:
+            with open(filename, "r") as f:
+                json_string = f.read()
+                self.report_card_from_json(json_string)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"Error loading report card: {e}")
+
     def print_report_card(self):
         print("\n\n")
         for i, p in enumerate(self.periods):
@@ -107,5 +113,5 @@ class ReportCard:
             print("\n====================")
 
 report_card = ReportCard()
-report_card.read_report_card_save(data)
+report_card.load_from_file_json("report_card_save.json")
 report_card.print_report_card()
