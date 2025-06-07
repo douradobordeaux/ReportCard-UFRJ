@@ -1,5 +1,5 @@
 import json
-from report_card_save import data
+
 class Subject:
     def __init__(self, name, grade, credits):
         self.name = name
@@ -7,12 +7,13 @@ class Subject:
         self.credits = credits
         self.result = grade >= 5
 
-    def subject_to_dictionary(self):
-        return {"name": self.name, "grade": self.grade, "credits": self.credits, "result": self.result}
+    def subject_to_json(self):
+        return json.dumps({"name": self.name, "grade": self.grade, "credits": self.credits})
     
-    def subject_from_dictionary(data):
-        subject = Subject(data["name"], data["grade"], data["credits"])
-        return subject
+    @staticmethod
+    def subject_from_json(json_string):
+        data = json.loads(json_string)
+        return Subject(data["name"], data["grade"], data["credits"])
 
 
 class Period:
@@ -37,12 +38,14 @@ class Period:
     def calculate_period_fails(self):
         return sum(1 for s in self.subjects if not s.result)
     
-    def period_to_dictionary(self):
-        return {"name": self.name, "subjects": [s.subject_to_dictionary() for s in self.subjects]}
+    def period_to_json(self):
+        return json.dumps({"name": self.name, "subjects": [json.loads(s.subject_to_json()) for s in self.subjects]})
     
-    def period_from_dictionary(data):
+    @staticmethod
+    def period_from_json(json_string):
+        data = json.loads(json_string)
         period = Period(data["name"])
-        period.subjects = [Subject.subject_from_dictionary(s) for s in data["subjects"]]
+        period.subjects = [Subject.subject_from_json(json.dumps(s)) for s in data["subjects"]]
         return period
 
 class ReportCard:
@@ -67,11 +70,22 @@ class ReportCard:
     def calculate_current_total_fails(self, period):
         return sum(p.calculate_period_fails() for p in self.periods[:period])
     
-    def report_card_to_dictionary(self):
-        return {"periods": [p.period_to_dictionary() for p in self.periods]}
+    def report_card_to_json(self):
+        return json.dumps({
+            "periods": [json.loads(p.period_to_json()) for p in self.periods]
+        }, indent=4)
     
-    def read_report_card_save(self, data):
-        self.periods = [Period.period_from_dictionary(p) for p in data["periods"]]
+    def report_card_from_json(self, json_string):
+        data = json.loads(json_string)
+        self.periods = [Period.period_from_json(json.dumps(p)) for p in data["periods"]]
+
+    def save_to_file_json(self, filename):
+        with open(filename, "w") as f:
+            f.write(self.report_card_to_json())
+
+    def load_from_file_json(self, filename):
+        with open(filename, "r") as f:
+            self.report_card_from_json(f.read())
     
     # def register_report_card(self):
     #     periods_amount = int(input("Type how many periods you want to register: "))
@@ -107,5 +121,5 @@ class ReportCard:
             print("\n====================")
 
 report_card = ReportCard()
-report_card.read_report_card_save(data)
+report_card.load_from_file_json("report_card.json")
 report_card.print_report_card()
