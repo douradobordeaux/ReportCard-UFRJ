@@ -6,12 +6,14 @@
         {
           "name": "Calculo 1",
           "grade": 4.2,
-          "credits": 6
+          "credits": 6,
+          "result": false
         },
         {
           "name": "Alg Lin 1",
           "grade": 3.8,
-          "credits": 4
+          "credits": 4,
+          "result": false
         }
       ]
     },
@@ -20,13 +22,15 @@
       "subjects": [
         {
           "name": "Calculo 1",
-          "grade": 6.4,
-          "credits": 6
+          "grade": 6.6,
+          "credits": 6,
+          "result": true
         },
         {
           "name": "Fisica 1",
           "grade": 3.2,
-          "credits": 4
+          "credits": 4,
+          "result": false
         }
       ]
     }
