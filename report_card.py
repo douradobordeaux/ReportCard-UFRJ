@@ -23,6 +23,10 @@ class Period:
     def insert_subject(self, subject):
         self.subjects.append(subject)
 
+    def delete_subject(self, subject):
+        if subject in self.subjects:
+            self.subjects.remove(subject)
+
     def calculate_period_average(self):
         subject_grades_weighted_sum = sum(s.grade * s.credits for s in self.subjects)
         subject_credits_sum = sum(s.credits for s in self.subjects)
@@ -53,6 +57,10 @@ class ReportCard:
     
     def insert_period(self, period):
         self.periods.append(period)
+    
+    def delete_period(self, period):
+        if period in self.periods:
+            self.periods.remove(period)
 
     def calculate_current_total_average(self, period):
         period_grades_weighted_sum = sum(p.calculate_period_average() * p.calculate_period_credits() for p in self.periods[:period])

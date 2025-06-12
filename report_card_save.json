@@ -1,15 +1,3 @@
 {
-    "periods": [
-        {
-            "name": "Per\u00edodo 1",
-            "subjects": [
-                {
-                    "name": "F\u00edsica 3",
-                    "grade": 4.5,
-                    "credits": 4.0,
-                    "result": false
-                }
-            ]
-        }
-    ]
+    "periods": []
 }

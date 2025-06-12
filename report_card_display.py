@@ -59,14 +59,24 @@ class BoletimApp:
 
     # Add Periods Function
     def add_period(self):
+        period_name = simpledialog.askstring("Nome do Período", "Digite o nome do novo período:")
+        if not period_name:
+            return
+
+        if any(p.name == period_name for p in self.report_card.periods):
+            messagebox.showerror("Erro", "Já existe um período com esse nome.")
+            return
+        
         self.period_count += 1
-        period_name = f"Período {self.period_count}"
 
         new_period = Period(period_name)
         self.report_card.insert_period(new_period)
 
         self.add_gui_period(period_name)
-        print("período adicionado com sucesso!\n")
+        messagebox.showinfo("Sucesso!", "Período carregado com sucesso!")
+
+
+
 
     # Add Period GUI Function
     def add_gui_period(self, period_name):
@@ -97,10 +107,19 @@ class BoletimApp:
                 tk.Label(row, text=str(subject.credits), width=15, anchor="center", font=("Arial", 12)).pack(side="left")
                 tk.Label(row, text="Aprovado" if subject.result else "Reprovado", width=16, anchor="center", font=("Arial", 12)).pack(side="left")
 
+                remove_button = tk.Button(row, text="Remover", font=("Arial", 10),
+                                  command=lambda s=subject, p=period: self.remove_subject(p, s))
+                remove_button.pack(side="left", padx=5)
+
         # Insert Subject Button
         add_subject_btn = tk.Button(frame, text="Adicionar Matéria", font=("Arial", 12),
                                     command=lambda p=period: self.add_subject_dialog(p))
         add_subject_btn.pack(anchor="w", pady=(5, 0))
+
+        # Remove Period Button
+        remove_btn = tk.Button(frame, text="X", font=("Arial", 12, "bold"), fg="red",
+                               command=lambda p=period: self.remove_period(p))
+        remove_btn.place(relx=1.0, x=0, y=0, anchor="ne")
 
         # Period Footer Information
         stats_frame = tk.Frame(frame)
@@ -166,6 +185,32 @@ class BoletimApp:
         btn_add = tk.Button(dialog, text="Adicionar", command=on_add)
         btn_add.pack(pady=10)
 
+    # Remove Subject Function
+    def remove_subject(self, period, subject):
+        confirm = messagebox.askyesno("Confirmar", f"Remover a matéria '{subject.name}'?")
+        if confirm:
+            period.delete_subject(subject)
+    
+            # Refresh Display
+            for widget in self.period_display_frame.winfo_children():
+                widget.destroy()
+            for p in self.report_card.periods:
+                self.add_gui_period(p.name)
+
+
+    def remove_period(self, period):
+        confirm = messagebox.askyesno("Confirmar", f"Remover o período '{period.name}'?")
+        if confirm:
+            self.report_card.delete_period(period)
+            self.period_count -= 1
+
+            # Refresh Display
+            for widget in self.period_display_frame.winfo_children():
+                widget.destroy()
+            for p in self.report_card.periods:
+                self.add_gui_period(p.name)
+
+        messagebox.showinfo("Sucesso!", "Período removido com sucesso!")
 
 
     # Load Periods Function
@@ -178,7 +223,8 @@ class BoletimApp:
         for period in self.report_card.periods:
             self.period_count += 1
             self.add_gui_period(period.name)
-        print("período carregado com sucesso!\n")
+        
+        messagebox.showinfo("Sucesso!", "Período carregado com sucesso!")
     
     # Save Report Card Function
     def save_report_card_to_file(self):
