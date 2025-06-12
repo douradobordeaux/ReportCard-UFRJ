@@ -70,7 +70,6 @@ class BoletimApp:
 
     # Add Period GUI Function
     def add_gui_period(self, period_name):
-        # Encontra o período pelo nome
         period = next((p for p in self.report_card.periods if p.name == period_name), None)
         if period is None:
             return
@@ -81,24 +80,92 @@ class BoletimApp:
         if not period.subjects:
             label = tk.Label(frame, text="(Nenhuma matéria ainda)", font=("Arial", 12))
             label.pack(anchor="w")
-            return
-        
-        header = tk.Frame(frame)
-        header.pack(fill="x", pady=(0, 5))
-        tk.Label(header, text="Matéria", width=37, anchor="w", font=("Arial", 12, "bold")).pack(side="left")
-        tk.Label(header, text="Nota", width=14, anchor="center", font=("Arial", 12, "bold")).pack(side="left")
-        tk.Label(header, text="Créditos", width=14, anchor="center", font=("Arial", 12, "bold")).pack(side="left")
-        tk.Label(header, text="Resultado", width=14, anchor="center", font=("Arial", 12, "bold")).pack(side="left")
+        else:
+            header = tk.Frame(frame)
+            header.pack(fill="x", pady=(0, 5))
+            tk.Label(header, text="Matéria", width=37, anchor="w", font=("Arial", 12, "bold")).pack(side="left")
+            tk.Label(header, text="Nota", width=14, anchor="center", font=("Arial", 12, "bold")).pack(side="left")
+            tk.Label(header, text="Créditos", width=14, anchor="center", font=("Arial", 12, "bold")).pack(side="left")
+            tk.Label(header, text="Resultado", width=14, anchor="center", font=("Arial", 12, "bold")).pack(side="left")
 
-        # Lista de matérias
-        for subject in period.subjects:
-            row = tk.Frame(frame)
-            row.pack(fill="x", pady=2)
+            for subject in period.subjects:
+                row = tk.Frame(frame)
+                row.pack(fill="x", pady=2)
 
-            tk.Label(row, text=str(subject.name), width=41, anchor="w", font=("Arial", 12)).pack(side="left")
-            tk.Label(row, text=str(subject.grade), width=16, anchor="center", font=("Arial", 12)).pack(side="left")
-            tk.Label(row, text=str(subject.credits), width=15, anchor="center", font=("Arial", 12)).pack(side="left")
-            tk.Label(row, text=str("Aprovado" if subject.result else "Reprovado"), width=16, anchor="center", font=("Arial", 12)).pack(side="left")
+                tk.Label(row, text=str(subject.name), width=41, anchor="w", font=("Arial", 12)).pack(side="left")
+                tk.Label(row, text=str(subject.grade), width=16, anchor="center", font=("Arial", 12)).pack(side="left")
+                tk.Label(row, text=str(subject.credits), width=15, anchor="center", font=("Arial", 12)).pack(side="left")
+                tk.Label(row, text="Aprovado" if subject.result else "Reprovado", width=16, anchor="center", font=("Arial", 12)).pack(side="left")
+
+        # Insert Subject Button
+        add_subject_btn = tk.Button(frame, text="Adicionar Matéria", font=("Arial", 12),
+                                    command=lambda p=period: self.add_subject_dialog(p))
+        add_subject_btn.pack(anchor="w", pady=(5, 0))
+
+        # Period Footer Information
+        stats_frame = tk.Frame(frame)
+        stats_frame.pack(fill="x", pady=10)
+
+        # Calculate Stats Functions Call
+        index = self.report_card.periods.index(period) + 1
+
+        period_average = period.calculate_period_average()
+        period_credits = period.calculate_period_credits()
+        earned_period_credits = period.calculate_period_earned_credits()
+        period_fails = period.calculate_period_fails()
+        total_average = self.report_card.calculate_current_total_average(index)
+        total_credits = self.report_card.calculate_current_total_credits(index)
+        total_earned_credits = self.report_card.calculate_current_total_earned_credits(index)
+        total_reprov = self.report_card.calculate_current_total_fails(index)
+
+        stats_text = (
+            f"Média do Período: {period_average:.2f}   Créditos do Período: {period_credits:.2f}   Créditos Obtidos: {earned_period_credits:.2f}   Reprovações: {period_fails:}\n"
+            f"Média Total: {total_average:.2f}    Créditos Acumulados: {total_credits:.2f}   CRO Total: {total_earned_credits:.2f}   Total de Reprovações: {total_reprov}"
+        )
+        tk.Label(stats_frame, text=stats_text, font=("Arial", 10, "bold"), anchor="center").pack()
+
+    def add_subject_dialog(self, period):
+        # Subject Insertion Window
+        dialog = tk.Toplevel(self.root)
+        dialog.title(f"Adicionar matéria - {period.name}")
+        dialog.geometry("350x250")
+        dialog.grab_set()  # modal
+
+        tk.Label(dialog, text="Nome da Matéria:").pack(pady=5)
+        entry_name = tk.Entry(dialog)
+        entry_name.pack(pady=5, fill="x", padx=10)
+
+        tk.Label(dialog, text="Nota:").pack(pady=5)
+        entry_grade = tk.Entry(dialog)
+        entry_grade.pack(pady=5, fill="x", padx=10)
+
+        tk.Label(dialog, text="Créditos:").pack(pady=5)
+        entry_credits = tk.Entry(dialog)
+        entry_credits.pack(pady=5, fill="x", padx=10)
+
+        def on_add():
+            try:
+                name = entry_name.get().strip()
+                grade = float(entry_grade.get())
+                credits = float(entry_credits.get())
+                if not name:
+                    raise ValueError("Nome da matéria vazio")
+
+                subject = Subject(name, grade, credits)
+                period.insert_subject(subject)
+
+                dialog.destroy()
+                # Display refresh
+                for widget in self.period_display_frame.winfo_children():
+                    widget.destroy()
+                for p in self.report_card.periods:
+                    self.add_gui_period(p.name)
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro ao adicionar matéria: {e}")
+
+        btn_add = tk.Button(dialog, text="Adicionar", command=on_add)
+        btn_add.pack(pady=10)
+
 
 
     # Load Periods Function

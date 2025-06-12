@@ -1,38 +1,15 @@
 {
-  "periods": [
-    {
-      "name": "23.1",
-      "subjects": [
+    "periods": [
         {
-          "name": "Calculo 1",
-          "grade": 4.2,
-          "credits": 6,
-          "result": false
-        },
-        {
-          "name": "Alg Lin 1",
-          "grade": 3.8,
-          "credits": 4,
-          "result": false
+            "name": "Per\u00edodo 1",
+            "subjects": [
+                {
+                    "name": "F\u00edsica 3",
+                    "grade": 4.5,
+                    "credits": 4.0,
+                    "result": false
+                }
+            ]
         }
-      ]
-    },
-    {
-      "name": "23.2",
-      "subjects": [
-        {
-          "name": "Calculo 1",
-          "grade": 6.6,
-          "credits": 6,
-          "result": true
-        },
-        {
-          "name": "Fisica 1",
-          "grade": 3.2,
-          "credits": 4,
-          "result": false
-        }
-      ]
-    }
-  ]
+    ]
 }
